@@ -6,9 +6,9 @@
 Robot będzie miał średnicę około 8 cm. Będzie złożony z dwóch płytek PCB, połączonych w 'kanapkę'. Dolna płytka (STM32 lub AVR) będzie odpowiadała za sterowanie silnikami itp, a górna (Rpi) od obliczenia i obsługę kamery.
 Pojazd będzie wyposażony w krańcówki (switch) (około cztery sztuki) wokół swojej obudowy, aby wykrywać zderzenia z otoczeniem.
 
-| Bok | Góra |
+| Góra | Bok |
 | -------- | -------- |
-| ![Bok](./images/visualisation_1.png) | ![Góra](./images/visualisation_2.png) |
+| ![Góra](./images/visualisation_1.png) | ![Bok](./images/visualisation_2.png) |
 
 - **Sterowanie**
 
