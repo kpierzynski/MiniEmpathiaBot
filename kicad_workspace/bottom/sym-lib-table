@@ -1,3 +1,5 @@
 (sym_lib_table
+  (version 7)
   (lib (name "pololu")(type "KiCad")(uri "${KIPRJMOD}/libraries/pololu.kicad_sym")(options "")(descr ""))
+  (lib (name "TI_BQ24250")(type "KiCad")(uri "${KIPRJMOD}/libraries/BQ24250RGER.kicad_sym")(options "")(descr ""))
 )

@@ -1,3 +1,5 @@
 (fp_lib_table
+  (version 7)
   (lib (name "pololu")(type "KiCad")(uri "${KIPRJMOD}/libraries/pololu.pretty")(options "")(descr ""))
+  (lib (name "TI_BQ24250")(type "KiCad")(uri "${KIPRJMOD}/libraries/TI_BQ24250.pretty")(options "")(descr ""))
 )
