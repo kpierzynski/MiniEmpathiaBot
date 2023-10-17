@@ -1,11 +1,5 @@
 kibot:
   version: 1
-  
-global:
-  aliases_for_3d_models:
-    - alias: 3d_model_dir_local
-      name: KICAD_3DMODEL_DIR_LOCAL
-      value: kicad_workspace/3d_models
 
 outputs:
   - name: render_3d_top
@@ -18,7 +12,7 @@ outputs:
       rotate_x: 5
       rotate_y: 0
       rotate_z: 6
-      
+
   - name: render_3d_bottom
     type: render_3d
     options:

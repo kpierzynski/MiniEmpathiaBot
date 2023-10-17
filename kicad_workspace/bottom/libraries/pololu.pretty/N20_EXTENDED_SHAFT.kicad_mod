@@ -59,7 +59,7 @@
     (scale (xyz 1 1 1))
     (rotate (xyz -90 0 0))
   )
-  (model "${KICAD_3DMODEL_DIR_LOCAL}/magnetic-encoder-pair-kit-for-micro-metal-gearmotors-hpcb-compatible-enc03b.step"
+  (model "${KIPRJMOD}/../3d_models/magnetic-encoder-pair-kit-for-micro-metal-gearmotors-hpcb-compatible-enc03b.step"
     (offset (xyz 0 -35.2 5))
     (scale (xyz 1 1 1))
     (rotate (xyz -90 0 0))

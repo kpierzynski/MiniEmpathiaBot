@@ -60,7 +60,7 @@
   (pad "23" smd rect (at -0.75 -2) (size 0.3 0.8) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 84fcf95d-ba94-4bd0-8ecb-1fceaa4ba1bb))
   (pad "24" smd rect (at -1.25 -2) (size 0.3 0.8) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp 1461b794-c1b1-4dec-9a08-5a621cbe430f))
   (pad "25" smd rect (at 0 0) (size 2.8 2.8) (layers "F.Cu" "F.Paste" "F.Mask") (tstamp b7bcea79-28b2-496d-806f-ce68bb885480))
-  (model "${KICAD_3DMODEL_DIR_LOCAL}/BQ24250RGER.stp"
+  (model "${KIPRJMOD}/../3d_models/BQ24250RGER.stp"
     (offset (xyz 0 0 0))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 0))
