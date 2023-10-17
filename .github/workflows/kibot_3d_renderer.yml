@@ -1,0 +1,47 @@
+name: Kibot 3D PCB Rendering
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - kicad_workspace/bottom/bottom.kicad_pcb
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup KiBot
+      uses: INTI-CMNB/KiBot@v2_k7
+      with:
+        config: config.kibot.yaml
+        board: 'kicad_workspace/bottom/bottom.kicad_pcb'
+        dir: renders
+    - name: Save 3d renders
+      uses: actions/upload-artifact@v3
+      with:
+        name: renders
+        path: 'renders'
+        if-no-files-found: error
+    - name: Setup Pages
+      uses: actions/configure-pages@v3
+    - name: Upload artifacts
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: 'renders'
+    - name: Deploy
+      id: deployment
+      uses: actions/deploy-pages@v1
