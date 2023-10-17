@@ -17,7 +17,7 @@
     (stroke (width 0.12) (type default)) (fill none) (layer "F.SilkS") (tstamp 284831bd-8431-48da-b5bb-e32a28aec829))
   (pad "1" thru_hole circle (at 4.5 0) (size 3.84 3.84) (drill 2) (layers "*.Cu" "*.Mask") (tstamp 1ffd77a3-72d8-412a-bb61-9d5f0faa1b81))
   (pad "2" thru_hole circle (at -4.5 0) (size 3.84 3.84) (drill 2) (layers "*.Cu" "*.Mask") (tstamp 13e4b7bf-1fc0-4ed7-a863-7c1b071310bb))
-  (model "${KICAD_3DMODEL_DIR_LOCAL}/ultrasound.step"
+  (model "${KIPRJMOD}/../3d_models/ultrasound.step"
     (offset (xyz 0 0 0))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 0))

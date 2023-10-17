@@ -15,7 +15,7 @@
   )
   (fp_rect (start 0 0) (end 65.25 18.55)
     (stroke (width 0.12) (type default)) (fill none) (layer "F.SilkS") (tstamp 4ba395a9-1e8a-45d4-b901-842d722269b7))
-  (model "${KICAD_3DMODEL_DIR_LOCAL}/INR18650-35E-Samsung.STEP"
+  (model "${KIPRJMOD}/../3d_models/INR18650-35E-Samsung.STEP"
     (offset (xyz 0 -9.275 9.275))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 90))

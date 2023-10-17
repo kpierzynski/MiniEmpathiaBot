@@ -19,7 +19,7 @@
     (stroke (width 0.12) (type default)) (fill none) (layer "F.SilkS") (tstamp fda126f1-2987-4927-9fa9-6a3638edb344))
   (fp_circle (center 13.1 2.1) (end 14.19 2.1)
     (stroke (width 0.12) (type default)) (fill none) (layer "F.SilkS") (tstamp 23872f30-2cfa-40ad-8dd9-f40b3ef1837f))
-  (model "${KICAD_3DMODEL_DIR_LOCAL}/step-up-voltage-regulator-u3v70x.step"
+  (model "${KIPRJMOD}/../3d_models/step-up-voltage-regulator-u3v70x.step"
     (offset (xyz 0 -0 0))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 90))

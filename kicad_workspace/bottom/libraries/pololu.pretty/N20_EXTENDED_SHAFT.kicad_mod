@@ -49,12 +49,12 @@
       )
     )
   )
-  (model "${KICAD_3DMODEL_DIR_LOCAL}/micro-metal-gearmotor-carbon-backshaft.step"
+  (model "${KIPRJMOD}/../3d_models/micro-metal-gearmotor-carbon-backshaft.step"
     (offset (xyz 0 -19 5))
     (scale (xyz 1 1 1))
     (rotate (xyz 90 0 0))
   )
-  (model "${KICAD_3DMODEL_DIR_LOCAL}/magnetic-encoder-pair-kit-for-micro-metal-gearmotors-hpcb-compatible-w1r02a.step"
+  (model "${KIPRJMOD}/../3d_models/magnetic-encoder-pair-kit-for-micro-metal-gearmotors-hpcb-compatible-w1r02a.step"
     (offset (xyz 0 -37.5 5))
     (scale (xyz 1 1 1))
     (rotate (xyz -90 0 0))
@@ -64,7 +64,7 @@
     (scale (xyz 1 1 1))
     (rotate (xyz -90 0 0))
   )
-  (model "${KICAD_3DMODEL_DIR_LOCAL}/pololu-wheel-32x7mm-black.step" hide
+  (model "${KIPRJMOD}/../3d_models/pololu-wheel-32x7mm-black.step"
     (offset (xyz 0 -3.5 5))
     (scale (xyz 1 1 1))
     (rotate (xyz 90 0 0))

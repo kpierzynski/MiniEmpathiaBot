@@ -27,7 +27,7 @@
     (thermal_bridge_angle 45) (tstamp 1d402093-8768-4b60-8a1e-ead68b9db933))
   (pad "6" smd roundrect (at 14.35 1.69 90) (size 2.286 1.9) (layers "F.Cu" "F.Paste" "F.Mask") (roundrect_rratio 0.25)
     (thermal_bridge_angle 45) (tstamp eabf0ea0-5bdc-4ec6-b2aa-b0d1ab2a5651))
-  (model "${KICAD_3DMODEL_DIR_LOCAL}/vl53l0x.stp"
+  (model "${KIPRJMOD}/../3d_models/vl53l0x.stp"
     (offset (xyz 8.15 -1 4))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 180 180))

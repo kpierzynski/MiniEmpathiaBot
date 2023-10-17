@@ -15,7 +15,7 @@
   )
   (fp_rect (start 0 0) (end 11.4 16.5)
     (stroke (width 0.12) (type default)) (fill none) (layer "F.SilkS") (tstamp 936314bb-e800-47e0-b7ad-5a5396995794))
-  (model "${KICAD_3DMODEL_DIR_LOCAL}/pololu-step-up-step-down-voltage-regulator-s7v8fx.step"
+  (model "${KIPRJMOD}/../3d_models/pololu-step-up-step-down-voltage-regulator-s7v8fx.step"
     (offset (xyz 0 -16.5 0))
     (scale (xyz 1 1 1))
     (rotate (xyz 0 0 0))
