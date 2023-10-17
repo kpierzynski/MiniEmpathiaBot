@@ -1,5 +1,10 @@
 # Empatyczny robot, iteracja druga
 
+## Obecny postep
+Widok gory | Widok spodu
+-- | --
+![top_view](https://kpierzynski.github.io/MiniEmpathiaBot/top_view.png) | ![bottom_view](https://kpierzynski.github.io/MiniEmpathiaBot/bottom_view.png)
+
 ## Wymagania
 - **Konstrukcja**
 
