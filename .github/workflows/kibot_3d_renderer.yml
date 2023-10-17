@@ -3,7 +3,7 @@ name: Kibot 3D PCB Rendering
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - kicad_workspace/bottom/bottom.kicad_pcb
   workflow_dispatch:
