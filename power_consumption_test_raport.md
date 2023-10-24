@@ -28,3 +28,9 @@ Rpi Zero 2 W + Camera v3 | 5V | 0.279A +- 0.020A | stream camera video over tcp
 Rpi Zero 2 W + Camera v3 | 5V | 0.412A +- 0.020A | stream camera vide over tcp + load core with python3 sum loop
 Rpi Zero 2 W + Camera v3 | 5V | 0.656A +- 0.020A | load all 4 cores
 Rpi Zero 2 W + Camera v3 | 5V | 0.050A | shutdown
+
+part | voltage | current | notes
+-- | -- | -- | -- 
+VL53L0X | 3.3V | 0.021A | high accuracy mode (25ms between readings)
+VL53L0X | 3.3V | 0.018A | continous mode (25ms between readings)
+VL53L0X | 3.3V | 0.005A | high speed mode (25ms between readings)
