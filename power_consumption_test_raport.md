@@ -20,3 +20,11 @@ part | voltage | current | notes
 n20 | 5V | 0.140A +- 0.020A | free running
 n20 | 5V | 0.370A +- 0.050A | trying a bit to stall with hand
 n20 | 5V | 0.800A +- 0.100A | trying to stall hard
+
+part | voltage | current | notes
+-- | -- | -- | -- 
+Rpi Zero 2 W + Camera v3 | 5V | 0.121A | idle + connected SSH
+Rpi Zero 2 W + Camera v3 | 5V | 0.279A +- 0.020A | stream camera video over tcp
+Rpi Zero 2 W + Camera v3 | 5V | 0.412A +- 0.020A | stream camera vide over tcp + load core with python3 sum loop
+Rpi Zero 2 W + Camera v3 | 5V | 0.656A +- 0.020A | load all 4 cores
+Rpi Zero 2 W + Camera v3 | 5V | 0.050A | shutdown
