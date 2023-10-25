@@ -23,10 +23,11 @@ n20 | 5V | 0.800A +- 0.100A | trying to stall hard
 
 part | voltage | current | notes
 -- | -- | -- | -- 
-Rpi Zero 2 W + Camera v3 | 5V | 0.121A | idle + connected SSH
-Rpi Zero 2 W + Camera v3 | 5V | 0.279A +- 0.020A | stream camera video over tcp
-Rpi Zero 2 W + Camera v3 | 5V | 0.412A +- 0.020A | stream camera vide over tcp + load core with python3 sum loop
-Rpi Zero 2 W + Camera v3 | 5V | 0.656A +- 0.020A | load all 4 cores
+Rpi Zero 2 W + Camera v3 | 5V | 0.121A | Legacy 64bit Lite Raspbian + idle + connected SSH
+Rpi Zero 2 W + Camera v3 | 5V | 0.279A +- 0.020A | Legacy 64bit Lite Raspbian + stream camera video over tcp
+Rpi Zero 2 W + Camera v3 | 5V | 0.412A +- 0.020A | Legacy 64bit Lite Raspbian + stream camera vide over tcp + load core with python3 sum loop
+Rpi Zero 2 W + Camera v3 | 5V | 0.656A +- 0.020A | Legacy 64bit Lite Raspbian + load all 4 cores
+Rpi Zero 2 W + Camera v3 | 5V | peak: 0.857A, typical: 0.450A - 0.650A | Legacy 64bit Raspbian (+desktop) + openCV ArUco detection
 Rpi Zero 2 W + Camera v3 | 5V | 0.050A | shutdown
 
 part | voltage | current | notes
