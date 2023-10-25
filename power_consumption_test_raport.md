@@ -35,3 +35,7 @@ part | voltage | current | notes
 VL53L0X | 3.3V | 0.021A | high accuracy mode (25ms between readings)
 VL53L0X | 3.3V | 0.018A | continous mode (25ms between readings)
 VL53L0X | 3.3V | 0.005A | high speed mode (25ms between readings)
+
+part | voltage | current | notes
+-- | -- | -- | --
+NUCLEO L152RE dev board | 5V | 0.058A | whole nucleo with 10Hz blink program on HAL
