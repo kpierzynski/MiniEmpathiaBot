@@ -5,6 +5,9 @@ Widok gory | Widok spodu
 -- | --
 ![top_view](https://kpierzynski.github.io/MiniEmpathiaBot/top_view.png) | ![bottom_view](https://kpierzynski.github.io/MiniEmpathiaBot/bottom_view.png)
 
+## Schemat ideowy
+![block_diagram](./images/block_diagram.png)
+
 ## Wymagania
 - **Konstrukcja**
 
