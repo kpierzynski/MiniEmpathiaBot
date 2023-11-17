@@ -8,6 +8,9 @@ Widok gory | Widok spodu
 ## Schemat ideowy
 ![block_diagram](./images/block_diagram.png)
 
+## Połączenie dolnej i górnej płyty
+Do połączenia wykonawczej płytki pcb i górnej, sterującej wykorzystamy złącze (propozycja: złącze JST na taśmie), z następującym pinout'em: 5V 5V GND GND WAKE_UP_SIGNAL I2C_SDA I2C_SCL UART_RX UART_TX GPIOX GPIOY
+
 ## Wymagania
 - **Konstrukcja**
 
