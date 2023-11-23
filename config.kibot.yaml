@@ -1,6 +1,9 @@
 kibot:
   version: 1
 
+global:
+  pcb_finish: "ImAu"
+
 outputs:
   - name: render_3d_top
     type: render_3d
