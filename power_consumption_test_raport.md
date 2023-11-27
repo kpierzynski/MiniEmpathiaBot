@@ -40,3 +40,7 @@ U3V70A | 3.7V | 0.00045A | standby step up current
 U3V70A | 4.2V | 0.00039A | standby step up current
 | | | | |
 RPI + 2 motors + WS2812B | 3V (on step up) | 2.6A - 2.8A  (to step up) | RPI all cores stressed, WS2812B RGB 127, 2 motors constantly spinnig with rapid direction change
+| | | | |
+TP5100 | 8V | 1.82A | board #1, current to battery
+TP5100 | 8V | 1.87A | board #2, current to battery
+TP5100 | 8V | 1.90A | board #3, current to battery
