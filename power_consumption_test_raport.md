@@ -44,3 +44,9 @@ RPI + 2 motors + WS2812B | 3V (on step up) | 2.6A - 2.8A  (to step up) | RPI all
 TP5100 | 8V | 1.82A | board #1, current to battery
 TP5100 | 8V | 1.87A | board #2, current to battery
 TP5100 | 8V | 1.90A | board #3, current to battery
+| | | | |
+S7V8F3 | 2.8V | 0.41A | input U, output I, a little warmer than room temperature
+S7V8F3 | 4.2V | 0.41A | input U, output I, a little warmer than room temperature
+S7V8F3 | 4.2V | 0.80A | input U, output I, warm to touch, but within acceptable range
+S7V8F3 | 3.3V | 0.80A | input U, output I, warm
+S7V8F3 | 2.8V | 0.80A | input U, output I, extremly hot
