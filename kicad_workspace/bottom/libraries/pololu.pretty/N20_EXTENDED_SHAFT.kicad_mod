@@ -35,20 +35,6 @@
     (thermal_bridge_angle 45) (tstamp 29875b35-d8d3-4e2f-9c96-b5954ea1a399))
   (pad "7" smd rect (at 4.064 9.525) (size 3.048 1.524) (layers "F.Cu" "F.Paste" "F.Mask")
     (thermal_bridge_angle 45) (tstamp e07fc924-268c-42a5-b223-3dad50b9345d))
-  (zone (net 0) (net_name "") (layer "F.SilkS") (tstamp d5ac881a-782c-4902-bfc2-4e838c91c7ef) (name "GEARS") (hatch edge 0.5)
-    (connect_pads (clearance 0))
-    (min_thickness 0.25) (filled_areas_thickness no)
-    (keepout (tracks not_allowed) (vias not_allowed) (pads not_allowed) (copperpour allowed) (footprints allowed))
-    (fill (thermal_gap 0.5) (thermal_bridge_width 0.5))
-    (polygon
-      (pts
-        (xy -6 19)
-        (xy 6 19)
-        (xy 6 10)
-        (xy -6 10)
-      )
-    )
-  )
   (model "${KIPRJMOD}/../3d_models/micro-metal-gearmotor-carbon-backshaft.step"
     (offset (xyz 0 -19 5))
     (scale (xyz 1 1 1))
