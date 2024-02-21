@@ -4988,6 +4988,9 @@
     (stroke (width 0.2) (type solid)) (layer "Edge.Cuts") (tstamp e0da87f4-f87c-4f60-803e-2ab0c8b14314))
   (gr_line (start 92.4057 43) (end 98.4057 43)
     (stroke (width 0.2) (type solid)) (layer "Edge.Cuts") (tstamp f05e54fc-3dd4-4697-a228-cfcaea08bb1b))
+  (gr_text "PAD+" (at 38.481 32.258) (layer "B.Cu") (tstamp f6ec4db8-96ef-4a9e-95ee-07bc7dd6e26d)
+    (effects (font (size 1.5 1.5) (thickness 0.3) bold) (justify left bottom mirror))
+  )
 
   (segment (start 57.655346 30.2035) (end 59.5855 30.2035) (width 0.254) (layer "F.Cu") (net 1) (tstamp 072d987c-3a46-488b-8247-18f67bdd194d))
   (segment (start 57.792846 28.9095) (end 58.086846 29.2035) (width 0.254) (layer "F.Cu") (net 1) (tstamp 096cd6e0-fe15-4afe-94de-38abe2a76b9d))
