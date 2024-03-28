@@ -57,6 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define DEBUG_Pin GPIO_PIN_3
+#define DEBUG_GPIO_Port GPIOA
 #define nFAULT_Pin GPIO_PIN_13
 #define nFAULT_GPIO_Port GPIOB
 #define nSleep_Pin GPIO_PIN_14
