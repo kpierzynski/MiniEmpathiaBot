@@ -28,6 +28,9 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "arm_math.h"
+#include "FIR/fir_coefs.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,6 +57,9 @@
 /* USER CODE BEGIN PV */
 volatile uint32_t adc_buffer;
 float adc_value;
+
+arm_fir_instance_f32 fir_instance;
+float32_t fir_in, fir_out, fir_state[FIR_LENGTH];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,9 +72,12 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *_hadc) {
-  adc_value = adc_buffer * 3.3f / ( (1<<ADC_RES) - 1 ) / OVERSAMPLING * 2;
+  adc_value = adc_buffer * 3.3f / ((1 << ADC_RES) - 1) / OVERSAMPLING * 2;
 
   HAL_GPIO_TogglePin(DEBUG_GPIO_Port, DEBUG_Pin);
+
+  fir_in = (float32_t) adc_value;
+  arm_fir_f32(&fir_instance, &fir_in, &fir_out, 1);
 }
 
 void motor_left_forward(void) {
@@ -103,14 +112,13 @@ void motor_right_stop(void) {
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
-int main(void)
-{
+ * @brief  The application entry point.
+ * @retval int
+ */
+int main(void) {
 
   /* USER CODE BEGIN 1 */
-
+  arm_fir_init_f32(&fir_instance, FIR_LENGTH, fir_coefficients, fir_state, 1);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -140,7 +148,7 @@ int main(void)
   MX_TIM15_Init();
   /* USER CODE BEGIN 2 */
   HAL_ADCEx_Calibration_Start(&hadc2, ADC_CALIB_OFFSET,
-      ADC_DIFFERENTIAL_ENDED);
+  ADC_DIFFERENTIAL_ENDED);
   HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
 
@@ -151,7 +159,7 @@ int main(void)
 
   HAL_UART_Transmit(&hlpuart1, (uint8_t*) "Starting\r\n", 10, HAL_MAX_DELAY);
   HAL_TIM_Base_Start(&htim15);
-  HAL_ADC_Start_DMA(&hadc2, (uint32_t*)&adc_buffer, 1);
+  HAL_ADC_Start_DMA(&hadc2, (uint32_t*) &adc_buffer, 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -161,6 +169,9 @@ int main(void)
   uint32_t line_num = 0;
 
   uint32_t uart_report = HAL_GetTick();
+
+  while (1)
+    ;
 
   while (1) {
     /* USER CODE END WHILE */
@@ -173,7 +184,7 @@ int main(void)
     uint8_t value = (
         HAL_GPIO_ReadPin(nFAULT_GPIO_Port, nFAULT_Pin) == GPIO_PIN_SET ? 1 : 0);
 
-    if (HAL_GetTick() - uart_report > 10) {
+    if (HAL_GetTick() - uart_report > 1000) {
       uint8_t len =
           sprintf((char*) data,
               "{%ld}: Hello World! Encoder2: %ld, Encoder4: %ld, nFault: %d, adc_value: %f, raw_adc: %ld\r\n",
@@ -188,48 +199,47 @@ int main(void)
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
-void SystemClock_Config(void)
-{
-  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+ * @brief System Clock Configuration
+ * @retval None
+ */
+void SystemClock_Config(void) {
+  RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
   /*AXI clock gating */
   RCC->CKGAENR = 0xFFFFFFFF;
 
   /** Supply configuration update enable
-  */
+   */
   HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
 
-  while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
+  while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {
+  }
 
   /** Macro to configure the PLL clock source
-  */
+   */
   __HAL_RCC_PLL_PLLSOURCE_CONFIG(RCC_PLLSOURCE_HSI);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_DIV1;
   RCC_OscInitStruct.HSICalibrationValue = 64;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-  {
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK) {
     Error_Handler();
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2
-                              |RCC_CLOCKTYPE_D3PCLK1|RCC_CLOCKTYPE_D1PCLK1;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+      | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2 | RCC_CLOCKTYPE_D3PCLK1
+      | RCC_CLOCKTYPE_D1PCLK1;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.SYSCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_HCLK_DIV1;
@@ -238,8 +248,7 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB2CLKDivider = RCC_APB2_DIV1;
   RCC_ClkInitStruct.APB4CLKDivider = RCC_APB4_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
-  {
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK) {
     Error_Handler();
   }
 }
@@ -249,11 +258,10 @@ void SystemClock_Config(void)
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
-void Error_Handler(void)
-{
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
+void Error_Handler(void) {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   __disable_irq();
