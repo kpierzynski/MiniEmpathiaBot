@@ -66,11 +66,13 @@ linear_extrude(height=h) difference() {
 rotate([0,0,90]) translate([-65/2+5,-30/2,h]) for( hole = holes ) translate(hole) spacer();
 
 translate([0,0,h]) difference() {
-	translate([-camera_x/2 -3,-d/2+5]) cube([camera_x+2*3,4,6]);
+    rotation = -7;
+    
+	translate([-camera_x/2 -3,-d/2+5]) rotate([rotation,0,0]) cube([camera_x+2*3,4,6]);
 	
-	translate([-17/2,-d/2+5]) cube([17,3,6]);
-	#translate([25/2-2,-d/2+5, 3]) rotate([-90,0]) cylinder(d=2.4,h=4);
-	#translate([-25/2+2,-d/2+5, 3]) rotate([-90,0]) cylinder(d=2.4,h=4);
+	#translate([-17/2,-d/2+5 - 0.01]) rotate([rotation,0,0]) cube([17,3,6 + 0.01]);
+	#translate([25/2-2,-d/2+5, 3]) rotate([-90+rotation,0]) cylinder(d=2.4,h=5);
+	#translate([-25/2+2,-d/2+5, 3]) rotate([-90+rotation,0]) cylinder(d=2.4,h=5);
 }
 
 
