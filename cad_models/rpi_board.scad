@@ -51,15 +51,21 @@ linear_extrude(height=h) difference() {
 	translate([-3.4,-15]) my_circle(d=2.2);
 
 	hull() {
-		translate([20,17.5]) circle(d=10);
+		translate([20,10]) circle(d=10);
 		translate([20,-17.5]) circle(d=10);
 	}
 	
 	hull() {
-		translate([-20,17.5]) circle(d=10);
+		translate([-20,10]) circle(d=10);
 		translate([-20,-17.5]) circle(d=10);
 	}
-	
+    
+    translate([-20,27.5]) circle(d=10);
+    translate([20,27.5]) circle(d=10);
+    
+    translate([20,35]) square([3,10], center=true);
+	translate([-20,35]) square([3,10], center=true);
+    
 	circle(d=10);
 }
 
