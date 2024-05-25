@@ -57,12 +57,24 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Enkoder_silnika_2_Hall_1_Pin GPIO_PIN_0
+#define Enkoder_silnika_2_Hall_1_GPIO_Port GPIOA
+#define Enkoder_silnika_2_Hall_2_Pin GPIO_PIN_1
+#define Enkoder_silnika_2_Hall_2_GPIO_Port GPIOA
 #define DEBUG_Pin GPIO_PIN_3
 #define DEBUG_GPIO_Port GPIOA
+#define VL_MIDDLE_XSHUT_Pin GPIO_PIN_5
+#define VL_MIDDLE_XSHUT_GPIO_Port GPIOC
 #define nFAULT_Pin GPIO_PIN_13
 #define nFAULT_GPIO_Port GPIOB
 #define nSleep_Pin GPIO_PIN_14
 #define nSleep_GPIO_Port GPIOB
+#define Enkoder_silnika_1_Hall_1_Pin GPIO_PIN_6
+#define Enkoder_silnika_1_Hall_1_GPIO_Port GPIOB
+#define Enkoder_silnika_1_Hall_2_Pin GPIO_PIN_7
+#define Enkoder_silnika_1_Hall_2_GPIO_Port GPIOB
+#define VL_INT_Pin GPIO_PIN_8
+#define VL_INT_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
