@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "i2c.h"
 #include "usart.h"
 #include "tim.h"
 #include "gpio.h"
@@ -32,6 +33,8 @@
 #include "enc_A_LPF_biquad_df1.h"
 #include "enc_B_LPF_biquad_df1.h"
 #include "pid_controller.h"
+
+#include "vl.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,6 +44,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define TIME_BETWEEN_MEASUREMENTS 200		// Time between VL measurements
+//#define HEARTBEAT_ENABLE
+#define EMERGENCY_STOP_DISTANCE 50
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -87,7 +93,10 @@ PID_HandleTypeDef hpid_B = {
 float w_B_ref = 0;
 
 unsigned char RxMsg[32];
-unsigned int RxMsgLen = 8;
+unsigned int RxMsgLen = 10;
+
+int print_irq = 0;
+int print_rx = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -99,13 +108,14 @@ void SystemClock_Config( void );
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 /**
- * @brief  Period elapsed callback in non-blocking mode
+ * @brief  Period elapsed callback in non-blocking mode to handle PID loop for motors
  * @param  htim TIM handle
  * @retval None
  */
 void HAL_TIM_PeriodElapsedCallback( TIM_HandleTypeDef * htim ) {
 	if( htim == &htim15 ) {
-		w_A = ENC_INC_Update( &henc_A );
+		// Negative encoder value, similar to motors, are caused by random magnet orientation
+		w_A = -ENC_INC_Update( &henc_A );
 		arm_biquad_cascade_df1_f32(
 				&enc_A_LPF, &w_A, &wf_A, ENC_A_LPF_BLOCK_SIZE );
 		if( w_A_ref == 0 ) {
@@ -115,7 +125,7 @@ void HAL_TIM_PeriodElapsedCallback( TIM_HandleTypeDef * htim ) {
 		}
 		drv8833_speed_change( &hdrv8833, A, duty_A );
 
-		w_B = -ENC_INC_Update( &henc_B );
+		w_B = ENC_INC_Update( &henc_B );
 		arm_biquad_cascade_df1_f32(
 				&enc_B_LPF, &w_B, &wf_B, ENC_B_LPF_BLOCK_SIZE );
 		if( w_B_ref == 0 ) {
@@ -128,7 +138,7 @@ void HAL_TIM_PeriodElapsedCallback( TIM_HandleTypeDef * htim ) {
 }
 
 /**
- * @brief  Rx Transfer completed callback.
+ * @brief  Rx Transfer completed callback for receiving motors' speed
  * @param  huart UART handle.
  * @retval None
  */
@@ -136,15 +146,18 @@ void HAL_UART_RxCpltCallback( UART_HandleTypeDef * huart ) {
 	if( huart != &hlpuart1 )
 		return;
 
-	int value_left = atoi( (char*)( RxMsg ) );
-	int value_right = atoi( (char*)( RxMsg + 4 ) );
+	int value_left, value_right;
 
-	w_A_ref = value_left;
-	w_B_ref = value_right;
+	// Might be too slow to keep in IRQ
+	(void)sscanf( (const char*)RxMsg, "L%dR%d", &value_left, &value_right );
 
-	HAL_UART_Receive_IT( &hlpuart1, RxMsg, RxMsgLen );
+	// Negative value just reverse robot direction due to random motors' polarity when soldering
+	w_A_ref = -value_left;
+	w_B_ref = -value_right;
 
+	(void)HAL_UART_Receive_IT( &hlpuart1, RxMsg, RxMsgLen );
 }
+
 /* USER CODE END 0 */
 
 /**
@@ -180,6 +193,7 @@ int main( void ) {
 	MX_TIM4_Init();
 	MX_TIM2_Init();
 	MX_TIM15_Init();
+	MX_I2C3_Init();
 	/* USER CODE BEGIN 2 */
 	drv8833_init( &hdrv8833 );
 	drv8833_start( &hdrv8833 );
@@ -200,16 +214,44 @@ int main( void ) {
 
 	HAL_UART_Transmit( &hlpuart1, (const uint8_t*)"Started.\r\n", 10,
 	HAL_MAX_DELAY );
+
+	vl_init( &hi2c3 );
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
+#ifdef HEARTBEAT_ENABLE
 	uint32_t heart = HAL_GetTick();
+#endif
+	uint32_t distance_timer = HAL_GetTick();
 	while( 1 ) {
-
+#ifdef HEARTBEAT_ENABLE
 		if( heart - HAL_GetTick() > 1000 )
 			HAL_UART_Transmit(
 					&hlpuart1, (const uint8_t*)". ", 2, HAL_MAX_DELAY );  // Send heartbeat dot
+#endif
+
+		// Start distance measurement
+		if( HAL_GetTick() - distance_timer > TIME_BETWEEN_MEASUREMENTS ) {
+			uint16_t distance;
+
+			// This measurement is blocking for now. It takes approximately 33ms + 2ms = 35ms, so it is fine until it is only task in main loop
+			if( vl_get_distance( &distance ) ) {
+				uint8_t msg_buf[64];
+				uint8_t len = sprintf(
+						(char*)msg_buf, "Measured_distance: %i\n\r", distance );
+				HAL_UART_Transmit( &hlpuart1, msg_buf, len, HAL_MAX_DELAY );
+
+				// Emergency stop when distance is low
+				if( distance < EMERGENCY_STOP_DISTANCE ) {
+					w_A_ref = 0;
+					w_B_ref = 0;
+				}
+			}
+
+			distance_timer = HAL_GetTick();
+		}
+
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */
@@ -238,6 +280,10 @@ void SystemClock_Config( void ) {
 
 	while( !__HAL_PWR_GET_FLAG( PWR_FLAG_VOSRDY ) ) {
 	}
+
+	/** Macro to configure the PLL clock source
+	 */
+	__HAL_RCC_PLL_PLLSOURCE_CONFIG( RCC_PLLSOURCE_HSI );
 
 	/** Initializes the RCC Oscillators according to the specified parameters
 	 * in the RCC_OscInitTypeDef structure.
