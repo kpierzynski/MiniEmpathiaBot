@@ -1,0 +1,2 @@
+## calibrate_camera
+This script performs camera calibration by detecting [chessboard](https://static.wixstatic.com/media/dd11f9_a6f04e762a25471e878762136b992d24~mv2.png/v1/fill/w_740,h_742,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/dd11f9_a6f04e762a25471e878762136b992d24~mv2.png) corners in multiple images taken on different angles and using them to calibrate the camera. Calibration is necessary for correcting lens distortions and improving the accuracy of metric measurements in images.
