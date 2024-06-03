@@ -44,8 +44,8 @@ public class Vision : MonoBehaviour
             return false;
         }
 
-        if (!Physics.Raycast(transform.position, direction, out hit)) return false;
-        if (Vector3.Distance(transform.position, hit.point) > radius) return false;
+        if (!Physics.Raycast(transform.position - Vector3.back * 0.1f, direction, out hit)) return false;
+        if (Vector3.Distance(transform.position - Vector3.back * 0.1f, hit.point) > radius) return false;
         if (!hit.collider.CompareTag(tag)) return false;
 
         Debug.DrawLine(transform.position, hit.point, Color.blue);

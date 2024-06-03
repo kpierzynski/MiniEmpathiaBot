@@ -19,7 +19,9 @@ This setup allows for the examination of both egotistic and empathetic behaviors
 3D Engine: **Unity**, version *2022.3.28f1*
 
 ## How to Use
-1. Customize the simulation:
+0. Open scene from Assets/Scenes.
+1. (Optional) Turn off gizmos for TextMeshPro.
+2. Customize the simulation:
     - Main Camera object -> Manager Script
         - Speed: Controls the speed of the simulation for faster results.
     - Robots object -> Robot Spawner Script
@@ -28,6 +30,6 @@ This setup allows for the examination of both egotistic and empathetic behaviors
         - Robot Count: Number of robots to spawn.
     - Robot Prefab -> Robot Script
         - Egoistic: controls the behavior of a swarm.
-2. Press "Play" in Unity's editor.
-3. Observe the results.
-4. (Optional) Edit the Robot.cs script to change the robots' behavior.
+3. Press "Play" in Unity's editor.
+4. Observe the results.
+5. (Optional) Edit the Robot.cs script to change the robots' behavior.
