@@ -13,6 +13,8 @@ public class RobotSpawner : MonoBehaviour
 
     void Start()
     {
+        Random.InitState(442333 + Goal.experimentId);
+
         float robotRadius = 0.85f;
         Bounds planeBounds = plane.GetComponent<Collider>().bounds;
 

@@ -10,6 +10,8 @@ public class Goal : MonoBehaviour
     private BoxCollider col;
     float startTime;
 
+    public static int experimentId = 0;
+
     void Start()
     {
         this.col = GetComponent<BoxCollider>();
@@ -22,7 +24,7 @@ public class Goal : MonoBehaviour
         {
             float time = (Time.time - startTime) / Time.timeScale;
 
-            Debug.Log(time);
+            Debug.Log($"ID: {experimentId++}, time: {time}");
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }

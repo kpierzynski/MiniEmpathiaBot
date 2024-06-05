@@ -38,12 +38,12 @@ public class Robot : MonoBehaviour
         foreach (GameObject go in list)
         {
             float distance = Vector3.Distance(transform.position, go.transform.position);
-            if (distance < 1.05f)
+            if (distance < 0.9f)
             {
                 wheels.stop();
                 return;
             }
-            else if (distance < 1.3f)
+            else if (distance < 1.1f)
             {
                 tower.Status.IsAtTarget = true;
                 return;
