@@ -12,14 +12,16 @@ UART config: 115200 8n1
 
 The entire system is programmed in C, using the **HAL** (Hardware Abstraction Layer) library to handle the peripherals of the STM32 microcontroller. The code is modular, allowing for easy expansion and modification of individual functions.
 
-<span style="font-size: 0.75rem;">GPT-3.5 was used to improve above description</span>
-
 CPU: STM32H7A3RITx
 IDE: **STM32CubeIDE**, version: *1.15.0*
 Dependencies:
-- **CMSIS**, version *5.7.0*, (provides the implementation of digital filters)
+- **CMSIS**, version *5.7.0*, (provides the implementation of digital filters): [link to download](https://www.keil.com/pack/ARM.CMSIS.5.7.0.pack)
+
+To install CMSIS, in STM32CubeIDE nagivate to Help -> Manage Embedded Software Packages -> From Local... and select downloaded CMSIS pack.
 
 ### L152_ADC
 Project mainly focused only on learning and testing stm32 platform
 CPU: STM32L152RE
 Objective: trigger ADC with TIMER using DMA
+
+GPT-3.5 was used to improve above description
