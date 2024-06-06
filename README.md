@@ -1,80 +1,31 @@
-# Empatyczny robot, iteracja druga
+# RoboBond
+## Empatyczny rój robotów
 
-## Obecny postep
-Widok gory | Widok spodu
--- | --
-![top_view](https://kpierzynski.github.io/MiniEmpathiaBot/top_view.png) | ![bottom_view](https://kpierzynski.github.io/MiniEmpathiaBot/bottom_view.png)
+| Mobilny rój robotów |
+|:-:|
+|![2nd_gen_robot](./images/robots.jpg)|
 
-## Schemat ideowy
-![block_diagram](./images/block_diagram.png)
+### Motywacja
+Celem projektu jest opracowanie drugiej generacji empatycznego roju robotów, umożliwiającej przeprowadzanie fizycznych eksperymentów wygodniej, szybciej i na szerszą skalę. Celem badawczym jest analiza algorytmów sztucznej empatii na zminiaturyzowanej generacji roju robotów.
 
-## Połączenie dolnej i górnej płyty
-Do połączenia wykonawczej płytki pcb i górnej, sterującej wykorzystamy złącze (propozycja: złącze JST na taśmie), z następującym pinout'em: 5V 5V GND GND WAKE_UP_SIGNAL I2C_SDA I2C_SCL UART_RX UART_TX GPIOX GPIOY
+### Opis
+Projekt "Rój Empatycznych Robotów" polega na stworzeniu zaawansowanej grupy robotów, która będzie zdolna do interakcji i współpracy, odzwierciedlając przy tym podstawowe instynkty ludzkie, aby efektywnie rozwiązywać zadane problemy. Przyjęcie perspektywy innej osoby i próba zrozumienia jej punktu widzenia znaczenie poprawia współpracę oraz wpływa na osiągnięte wyniki. Roboty dzięki modułowi sztucznej empatii, będą mogły podejmować decyzje w oparciu o stan sąsiednich robotów, pozwala to na stworzenie bardziej efektywnych strategii i szybsze osiągnięcie globalnego celu.
 
-## Wymagania
-- **Konstrukcja**
+Do przeprowadzenia eksperymentów walidujących użycie algorytmów sztucznej empatii, stworzone zostały dwa symulatory oraz fizyczna platforma mobilnych robotów.
 
-Robot będzie miał średnicę około 8 cm. Będzie złożony z dwóch płytek PCB, połączonych w 'kanapkę'. Dolna płytka (STM32 lub AVR) będzie odpowiadała za sterowanie silnikami itp, a górna (Rpi) od obliczenia i obsługę kamery.
-Pojazd będzie wyposażony w krańcówki (switch) (około cztery sztuki) wokół swojej obudowy, aby wykrywać zderzenia z otoczeniem.
+### Zastosowania
+- Platforma badawcza dla naukowców do weryfikacji nowych algorytmów sztucznej empatii,
+- Środowisko dla nauczycieli wspierające dydaktykę z zakresu sztucznej inteligencji,
+- Infrastruktura do testowania nowych ścieżek automatyzacji i robotyzacji w przedsiębiorstwach,
+- ... oraz wiele innych.
 
-| Góra | Bok |
-| -------- | -------- |
-| ![Góra](./images/visualisation_1.png) | ![Bok](./images/visualisation_2.png) |
-
-- **Sterowanie**
-
-Za sterowanie czujnikami, silnikami itp. będzie odpowiedzialny mikrokontroler STM32 lub AVR. Z kolei za obsługę kamery będzie odpowiadał moduł Rasberry Pi Zero v2.
-
-- **Napęd**
-
-Robot będzie poruszał się z wykorzystaniem silników DC z enkoderami, aby umożliwić dokładne pomiary pojazdu. Niezbędny do tego będzie również sterownik silników, który w raz z enkoderami będzie sterowany przez STM. Dobór odpowiedniego przełożenia silnika wymaga ustalenia z jaką prędkością powinien poruszać się robot.
-
-| Koła | Tylne koło | Silnik z enkoderem |
-| -------- | -------- | -------- |
-| ![Koło](https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcSUp6mGs-iCtDkQpemEjEq1Jl35-YKetpdcendzWMH9eVRLjXiS50TK4wUbikKr-jl2AhQ184Erd3O-CO7vkvXWsPYrM6P2heWlLPOQQmikmpkiAZGQldgo&usqp=CAE) | ![Tylne koło](https://kamami.pl/8025-large_default/pololu-ball-caster-plastikowa-kulka-podporowa-38-950.jpg) | ![Silnik](https://a.pololu-files.com/picture/0J10611.1200.jpg?c5604fe587296f96f06195d3fa81426c) |
-
-- **Kamera**
-
-Kamera będzie osadzona statycznie przy wieży LED. Serwomechanizm dodaje niepotrzebną złożoność, robot może obrócić się cały, aby wykonać zdjęcie.
-
-- **LED**
-
-Wieża LED oparta będzie o diody WS2812B (lub kompatybilne), w ośmiu rzędach, po dwie lub trzy diody.
-
-- **Zasilanie**
-
-Do zasilania pojazdów można zastosować cylindryczną baterie litowo jonową 18650 osadzoną w środku wieży LED, lub baterię litowo polimerową. W obu przypadkach wymagany będzie jeszcze układ ładowania ogniwa.
-Aby uzyskać napięcie zasilania 5V, należy zastosować przetwornicę. Możliwości są dwie: 
-    - przetwornica podwyższająca napięcie
-        - niższa sprawność
-        - jedno ogniwo, stąd prostszy układ ładowania ogniw
-    - przetwornica obniżająca napięcie
-        - wyższa sprawność
-        - dwa lub więcej ogniw, bardziej skomplikowany układ ładowania
-
-| | Li-ion 18650 | Li-Po |
-| -------- | -------- | -------- |
-| Zalety   | Wydajność prądowa (nawet 30A) | Wydajne prądowo ogniwa są zazwyczaj duże |
-| Zalety   | Tania | Gotowe zabezpieczenie przeciw rozładowaniu |
-| Zalety   | Prosta wymiana w razie potrzeby | Płaska |
-| Wady     | Podwyższa środek ciężkości | Trudno dostępna o wymaganych parametrach |
-| Wady     | Wymaga modyfikacji wieży | Wymiary ograniczają możliwości |
-| Wady     | Wymaga dodatkowego układu zabezpieczającego | - |
-
-| Li-ion 18650 | Li-Po |
-| -------- | -------- |
-| ![Ogniwo 18650](https://botland.com.pl/img/art/inne/06463_1.jpg) | ![Ogniwo LiPo](https://balticad.eu/zdjecia/produkt/1533/2546/600x600/3/akumulator_li_po_3_7v_250mah_5x20x30mm_7724.jpg) |
-
-- **Ładowanie**
-
-Do ładowania robotów zostaną wykorzystane pady kontaktowe, które będą w odpowiedni sposób wykrywane przez pojazdy. Do wypozycjonowania pojazdu względem padów można zastosować magnesy neodymowe, które naprowadzą robota wprost na pady. Pady kontaktowe mogłyby znajdować się pod obudową lub na jej boku.
-
-- **Wybudzanie**
-
-Mikrofon ultradźwiękowy, który ma ne celu wybudzenie robotów z trybu uśpienia. Jedna zewnętrzna płytka na arenie (np. ESP32/8266) będzie na stałe podłączona do internetu i będzie wyposażona w głośnik na ultradźwięki. Po otrzymaniu informacji po WiFi, wyemituje ona dźwięk, który wybudzi STM przez mikrofon, który z kolei wybudzi Rpi.
-W przypadku niepowodzenia, można zastosować diody i fototranzystory/odborniki IR. 
-
-- **Czujniki**
-
-Warto wyposażyć robota w dodatkowe czujniki: *żyroskop*, *kompas* i *akcelerometr*. Umożliwią one dokładniejsze odnajdowanie się robota w przestrzeni.
-
+### Zawartość
+W repozytorium znajdują się:
+- Symulatory
+    - `simulators/RL_ROS_Robots`
+    - `simulators/Simpathy`
+- Projekt mobilnych robotów
+    - `kicad_workspace/bottom` - schemat elektroniczny PCB oraz opis konstrukcji
+    - `code/STM32` - kod źródłowy dolnego niskopoziomowego mikrokontrolera robota
+    - `code/PI` - kod źródłowy implementujący scenariusz empatyczny 
+    - `cad_models` - modele 3d części robota
