@@ -1,29 +1,21 @@
 import os
-from launch_ros.parameter_descriptions import ParameterValue
-from ament_index_python.packages import get_package_share_path, get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, Command, PythonExpression
 from launch_ros.actions import Node
-from launch.actions import Shutdown, RegisterEventHandler
-from launch.event_handlers import OnProcessExit, OnProcessIO
+from launch.conditions import IfCondition
+from launch_ros.parameter_descriptions import ParameterValue
+from ament_index_python.packages import get_package_share_path, get_package_share_directory
 
 def generate_launch_description():
-    urdf_path = os.path.join(get_package_share_path('explorer_bot'),
-                             'urdf', 'my_robot.urdf.xacro')
-
-    gazebo_world_path = os.path.join(get_package_share_path('simulation_environment'),
-                             'worlds', 'train_world.world')
-
-    rviz_config_path = os.path.join(get_package_share_path('simulation_environment'),
-                             'rviz', 'urdf_config.rviz')
+    urdf_path = os.path.join(get_package_share_path('explorer_bot'), 'urdf', 'my_robot.urdf.xacro')
+    gazebo_world_path = os.path.join(get_package_share_path('simulation_environment'), 'worlds', 'train_world.world')
+    rviz_config_path = os.path.join(get_package_share_path('simulation_environment'), 'rviz', 'urdf_config.rviz')
 
     robot_description = ParameterValue(Command(['xacro ', urdf_path]), value_type=str)
-
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
-
-    robot_type = LaunchConfiguration('robot_type')
+    robot_type = LaunchConfiguration('robot_type', default='A')
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([os.path.join(
@@ -45,11 +37,27 @@ def generate_launch_description():
         parameters=[{'use_sim_time': use_sim_time}]
     )
 
-    spawn_entity = Node(
+    spawn_entity_A = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-topic', 'robot_description', '-entity', 'my_bot'],
-        output='screen'
+        arguments=[
+            '-topic', 'robot_description',
+            '-entity', 'my_bot'
+        ],
+        output='screen',
+        condition=IfCondition(PythonExpression(["'", LaunchConfiguration('robot_type'), "' == 'A'"]))
+    )
+
+    spawn_entity_B = Node(
+        package='gazebo_ros',
+        executable='spawn_entity.py',
+        arguments=[
+            '-topic', 'robot_description',
+            '-entity', 'my_bot',
+            '-x', '-3', '-y', '-3'
+        ],
+        output='screen',
+        condition=IfCondition(PythonExpression(["'", LaunchConfiguration('robot_type'), "' == 'B'"]))
     )
 
     lidar_node = Node(
@@ -59,10 +67,10 @@ def generate_launch_description():
         output='screen',
     )
 
-    test_auto_drive_node = Node(
+    train_auto_drive_node = Node(
         package='simulation_environment',
-        executable='test_auto_drive_node.py',
-        name='test_auto_drive_node',
+        executable='train_auto_drive_node.py',
+        name='train_auto_drive_node',
         output='screen',
         parameters=[{'robot_type': robot_type}]
     )
@@ -70,13 +78,14 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument(
             'robot_type',
-            default_value='C',
-            description='Type of robot to train (A, B or C)'
+            default_value='A',
+            description='Type of robot to train (A or B)'
         ),
         robot_state_publisher,
         gazebo,
-        spawn_entity,
         rviz2_node,
+        spawn_entity_A,
+        spawn_entity_B,
         lidar_node,
-        test_auto_drive_node
+        train_auto_drive_node
     ])

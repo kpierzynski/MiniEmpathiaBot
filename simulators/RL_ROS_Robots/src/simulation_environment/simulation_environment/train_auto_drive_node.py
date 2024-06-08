@@ -12,15 +12,15 @@ from rclpy.time import Time
 class AutoDriveNode(Node):
     def __init__(self):
         super().__init__('auto_drive_node')
+        self.robot_type = self.declare_parameter('robot_type', 'A').get_parameter_value().string_value
         self.publisher_ = self.create_publisher(Twist, '/cmd_vel', 10)
         self.subscription_distance = self.create_subscription(Float32, '/distance_to_obstacle', self.distance_callback, 10)
         self.subscription_collision = self.create_subscription(Bool, '/collision_detected', self.obstacle_callback, 10)
         self.publisher_stop_lidar = self.create_publisher(Bool, '/stop_lidar', 10)
 
-        self.data_timer = self.create_timer(0.2, self.data_timer_callback)  # Co ile odbierać dane
-        self.direction_timer = self.create_timer(1.0, self.direction_timer_callback)  # Co ile zmieniać kierunek jazdy
-        self.time_check_timer = self.create_timer(0.1, self.time_check_callback)  # Timer do czasu symulacji
-
+        self.data_timer = self.create_timer(0.2, self.data_timer_callback)
+        self.direction_timer = self.create_timer(1.0, self.direction_timer_callback)
+        self.time_check_timer = self.create_timer(0.1, self.time_check_callback)
         self.current_direction = random.uniform(-(math.pi/2), math.pi/2)
         self.current_velocity = 0.5
         self.distance_to_obstacle = None
@@ -29,10 +29,10 @@ class AutoDriveNode(Node):
  
         self.reset_simulation_client = self.create_client(Empty, '/reset_simulation')
         self.simulation_count = 0
-        self.simulation_limit = 100
+        self.simulation_limit = 50
         self.simulation_start_time = self.get_clock().now()  
         self.simulation_duration = None  
-        self.simulation_time_limit = 10.0
+        self.simulation_time_limit = 5.0
         
         self.publish_velocity()
         self.clear_json_file()
@@ -68,7 +68,7 @@ class AutoDriveNode(Node):
     def reset_simulation_due_to_obstacle(self):
         self.simulation_end_time = self.get_clock().now()
         self.simulation_duration = self.simulation_end_time - self.simulation_start_time
-        self.save_data_to_json()
+        self.save_data_to_json(final_reward=True)
         self.simulation_count += 1
 
         if self.simulation_count >= self.simulation_limit:
@@ -82,7 +82,7 @@ class AutoDriveNode(Node):
     def reset_simulation_due_to_time(self):
         self.simulation_end_time = self.get_clock().now()
         self.simulation_duration = self.simulation_end_time - self.simulation_start_time
-        self.save_data_to_json()
+        self.save_data_to_json(final_reward=True)
         self.simulation_count += 1
 
         if self.simulation_count >= self.simulation_limit:
@@ -115,9 +115,10 @@ class AutoDriveNode(Node):
         self.get_logger().info(f'Changed driving direction to: {self.current_direction:.2f}, moving forward')
 
     def clear_json_file(self):
-        with open('driving_data.json', 'w') as json_file:
+        filename = f'driving_data_{self.robot_type.lower()}.json'
+        with open(filename, 'w') as json_file:
             json.dump([], json_file)
-    
+
     def direction_to_string(self, direction):
         if direction > math.pi/4:
             return 'hard right'
@@ -144,38 +145,33 @@ class AutoDriveNode(Node):
         else:
             return "safe"
     
-    def RL_rewards(self):
+    def RL_rewards(self, final_reward=False):
         reward = 0
-
         if self.distance_to_obstacle is not None:
             current_distance_status = self.distance_to_string(self.distance_to_obstacle)
-
-            if self.simulation_duration is not None:
-                sym_time = self.simulation_duration.nanoseconds / 1e9
-            else:
-                sym_time = (self.get_clock().now() - self.simulation_start_time).nanoseconds / 1e9
+            sym_time = self.simulation_duration.nanoseconds / 1e9 if self.simulation_duration else (self.get_clock().now() - self.simulation_start_time).nanoseconds / 1e9
 
             if current_distance_status != "hit":
-                #bez uderzenia (liczba sekund symulacji, min 10 punktów tj 1s - 10pkt, 2s - 20 pkt itd)
-                reward = sym_time * 10
-                self.get_logger().info(f'Reward for simulation time: {reward}')
-                #instynkt
-                if (self.previous_distance_status in ["close", "very close"]) and current_distance_status in ["safe", "far"]:
-                    reward += 10
-                    self.get_logger().info(f'Reward for avoiding collision: {reward}')
+                if final_reward:
+                    reward = sym_time * 10
+                if self.previous_distance_status in ["close", "very close"] and current_distance_status in ["safe", "far"]:
+                    reward += 35
+                elif self.previous_distance_status in ["very close"] and current_distance_status == "close":
+                    reward += 25
+                elif self.previous_distance_status in ["safe"] and current_distance_status == "far":
+                     reward += 10
+                elif self.previous_distance_status == "close" and current_distance_status == "very close":
+                    reward -= 10
             else:
-                #uderzenie (-20 + liczba sekund symulacji)
-                reward = -20 + sym_time * (-10)
-                self.get_logger().info(f'Penalty for collision: {reward}')
-
+                reward = (-50 + sym_time * (-10))
             self.previous_distance_status = current_distance_status
         else:
-            #bez nagrody, gdy nie ma danych o przeszkodzie
             self.get_logger().info('No data available for reward calculation.')
 
         return reward
 
-    def save_data_to_json(self):
+
+    def save_data_to_json(self, final_reward=False):
         if self.simulation_duration is not None:
             duration_in_seconds = self.simulation_duration.nanoseconds / 1e9
         else:
@@ -191,10 +187,10 @@ class AutoDriveNode(Node):
         else:
             direction_str = "unknown"
 
-        if self.previous_distance != distance_str:
+        if self.previous_distance != distance_str or final_reward:
             self.previous_distance = distance_str
 
-            reward = self.RL_rewards()
+            reward = self.RL_rewards(final_reward=final_reward)
             reward = round(reward, 2)
 
             data = {
@@ -205,17 +201,17 @@ class AutoDriveNode(Node):
                 "reward": reward
             }
 
+            filename = f'driving_data_{self.robot_type.lower()}.json'
             try:
-                with open('driving_data.json', 'r') as json_file:
+                with open(filename, 'r') as json_file:
                     data_history = json.load(json_file)
             except FileNotFoundError:
                 data_history = []
 
             data_history.append(data)
 
-            with open('driving_data.json', 'w') as json_file:
+            with open(filename, 'w') as json_file:
                 json.dump(data_history, json_file, indent=4)
-
 
 def main(args=None):
     rclpy.init(args=args)

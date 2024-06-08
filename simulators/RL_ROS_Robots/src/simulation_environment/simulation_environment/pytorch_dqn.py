@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import json
+import os
 import random
 import torch
 import torch.nn as nn
@@ -20,10 +21,9 @@ GAMMA = 0.99
 EPSILON_START = 1.0
 EPSILON_END = 0.1
 EPSILON_DECAY = 200
-LR = 0.001
+LR = 0.01
 MEMORY_SIZE = 10000
 
-# Mapowanie stringów na liczby
 distance_mapping = {
     "hit": 0,
     "very close": 1,
@@ -33,30 +33,12 @@ distance_mapping = {
 }
 
 direction_mapping = {
-    "hard left": -2,
-    "left": -1,
-    "forward": 0,
-    "right": 1,
-    "hard right": 2
+    "hard left": 0,
+    "left": 1,
+    "forward": 2,
+    "right": 3,
+    "hard right": 4
 }
-
-with open('driving_data.json', 'r') as f:
-    driving_data = json.load(f)
-
-states = []
-actions = []
-rewards = []
-next_states = []
-
-for entry in driving_data:
-    state = [distance_mapping[entry['distance_to_obstacle']], direction_mapping[entry['current_direction']]]
-    action = direction_mapping[entry['current_direction']]
-    reward = entry['reward']
-    next_state = state
-    states.append(state)
-    actions.append(action)
-    rewards.append(reward)
-    next_states.append(next_state)
 
 class DQN(nn.Module):
     def __init__(self, in_position, out_actions):
@@ -77,19 +59,16 @@ class ReplayBuffer(object):
         self.memory = deque([], maxlen=capacity)
     
     def push(self, *args):
-        #zapis doświadczenia do bufora
         self.memory.append(Transition(*args))
     
     def sample(self, batch_size):
-        #losow wybiera batch_size doświadczeń z bufora
         return random.sample(self.memory, batch_size)
     
     def __len__(self):
         return len(self.memory)
 
-n_actions = 5 #mocno w lewo lub prawo, skręt w lewo lub prawo, prosto
-robot_state = 2 #odleglosc od przeszkody i kierunek
-
+n_actions = 5
+robot_state = 2
 policy_net = DQN(robot_state, n_actions).to(device)
 target_net = DQN(robot_state, n_actions).to(device)
 target_net.load_state_dict(policy_net.state_dict())
@@ -143,39 +122,76 @@ def optimize_model():
 class DQNTrain(Node):
     def __init__(self):
         super().__init__('dqn_train')
-        self.subscription = self.create_subscription(
-            Bool,
-            '/stop_lidar',
-            self.listener_callback,
-            10)
-        self.subscription
-        self.training_started = False
-    
-    def listener_callback(self,msg):
-        if msg.data and not self.training_started:
-            self.training_started = True
-            self.train_dqn()
-    
+        self.robot_type = self.declare_parameter('robot_type', 'A').get_parameter_value().string_value
+        self.train_dqn()
+
     def train_dqn(self):
         self.get_logger().info(f'TRAIN DQN STARTING...')
 
-        num_episodes = 50
+        filenames = ['driving_data_a.json', 'driving_data_b.json']
+        driving_data = []
+        files_found = 0
+
+        for filename in filenames:
+            if os.path.exists(filename):
+                with open(filename, 'r') as f:
+                    data = json.load(f)
+                    driving_data.extend(data)
+                    files_found += 1
+
+        if driving_data:
+            if files_found == 2:
+                output_filename = 'driving_data_c.json'
+            else:
+                output_filename = f'driving_data_{self.robot_type.lower()}.json'
+            
+            with open(output_filename, 'w') as f:
+                json.dump(driving_data, f)
+
+        else:
+            self.get_logger().warning(f'No driving data files found.')
+
+        states = []
+        actions = []
+        rewards = []
+        next_states = []
+
+        for i in range(len(driving_data) - 1):
+            state = [distance_mapping[driving_data[i]['distance_to_obstacle']], direction_mapping[driving_data[i]['current_direction']]]
+            next_state = [distance_mapping[driving_data[i + 1]['distance_to_obstacle']], direction_mapping[driving_data[i + 1]['current_direction']]]
+            action = torch.tensor([[direction_mapping[driving_data[i]['current_direction']]]], dtype=torch.long)
+            reward = torch.tensor([driving_data[i]['reward']], dtype=torch.float32)
+            states.append(torch.tensor(state, dtype=torch.float32).unsqueeze(0))
+            actions.append(action)
+            rewards.append(reward)
+            next_states.append(torch.tensor(next_state, dtype=torch.float32).unsqueeze(0))
+
+        num_episodes = 200
         for i_episode in range(num_episodes):
             for t in range(len(states)):
-                state = torch.tensor([states[t]], dtype=torch.float32).to(device)
-                action = torch.tensor([[actions[t]]], dtype=torch.long).to(device)
-                reward = torch.tensor([rewards[t]], dtype=torch.float32).to(device)
-                next_state = torch.tensor([next_states[t]], dtype=torch.float32).to(device)
+                state = states[t].to(device)
+                action = actions[t].to(device)
+                reward = rewards[t].to(device)
+                next_state = next_states[t].to(device)
 
                 memory.push(state, action, reward, next_state)
 
                 optimize_model()
             
-            if i_episode % 10 == 0:
+            if i_episode % 5 == 0:
                 target_net.load_state_dict(policy_net.state_dict())
-        self.get_logger().info(f'TRAIN DQN FINISH!')
+                self.get_logger().info(f'Episode {i_episode}, Updated target network')
 
-torch.save(policy_net.state_dict(), 'dqn_model.pth')
+        model_a_exists = os.path.exists('dqn_model_a.pth')
+        model_b_exists = os.path.exists('dqn_model_b.pth')
+
+        if model_a_exists and model_b_exists:
+            model_filename = 'dqn_model_c.pth'
+        else:
+            model_filename = f'dqn_model_{self.robot_type.lower()}.pth'
+
+        torch.save(policy_net.state_dict(), model_filename)
+        self.get_logger().info(f'TRAIN DQN FINISH!')
 
 def main(args=None):
     rclpy.init(args=args)
