@@ -1,13 +1,12 @@
 import os
-from launch_ros.parameter_descriptions import ParameterValue
-from ament_index_python.packages import get_package_share_path, get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration, Command, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, Command, PythonExpression
 from launch_ros.actions import Node
-from launch.actions import Shutdown, RegisterEventHandler
-from launch.event_handlers import OnProcessExit, OnProcessIO
+from launch.conditions import IfCondition
+from launch_ros.parameter_descriptions import ParameterValue
+from ament_index_python.packages import get_package_share_path, get_package_share_directory
 
 def generate_launch_description():
     urdf_path = os.path.join(get_package_share_path('explorer_bot'),
@@ -45,12 +44,40 @@ def generate_launch_description():
         parameters=[{'use_sim_time': use_sim_time}]
     )
 
-    spawn_entity = Node(
+    spawn_entity_A = Node(
+            package='gazebo_ros',
+            executable='spawn_entity.py',
+            arguments=[
+                '-topic', 'robot_description',
+                '-entity', 'my_bot'
+            ],
+            output='screen',
+            condition=IfCondition(PythonExpression(["'", LaunchConfiguration('robot_type'), "' == 'A'"]))
+        )
+
+    spawn_entity_B = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-topic', 'robot_description', '-entity', 'my_bot'],
-        output='screen'
+        arguments=[
+            '-topic', 'robot_description',
+            '-entity', 'my_bot',
+            '-x', '-3', '-y', '-3'
+        ],
+        output='screen',
+        condition=IfCondition(PythonExpression(["'", LaunchConfiguration('robot_type'), "' == 'B'"]))
     )
+
+    spawn_entity_C = Node(
+        package='gazebo_ros',
+        executable='spawn_entity.py',
+        arguments=[
+            '-topic', 'robot_description',
+            '-entity', 'my_bot',
+            '-x', '3', '-y', '1'
+        ],
+        output='screen',
+        condition=IfCondition(PythonExpression(["'", LaunchConfiguration('robot_type'), "' == 'C'"]))
+    )    
 
     lidar_node = Node(
         package='simulation_environment',
@@ -75,7 +102,9 @@ def generate_launch_description():
         ),
         robot_state_publisher,
         gazebo,
-        spawn_entity,
+        spawn_entity_A,
+        spawn_entity_B,
+        spawn_entity_C,
         rviz2_node,
         lidar_node,
         test_auto_drive_node
