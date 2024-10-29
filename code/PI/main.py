@@ -30,12 +30,12 @@ def steer_robot(corners, distance):
 
 	if center_x < image_center_x - 100:
 		left_speed = 100
-		right_speed = 120
+		right_speed = 110
 	elif center_x > image_center_x + 100:
-		left_speed = 120
+		left_speed = 110
 		right_speed = 100
 	else:
-		left_speed = right_speed = 120 if distance > 0.75 else 100
+		left_speed = right_speed = 110 if distance > 0.75 else 80
 
 	send_motor(left_speed, right_speed)
 	print(f"MOTORS RUNNING AT: {left_speed}, {right_speed}")
@@ -44,12 +44,15 @@ def spin():
 	if vl > 500:
 		send_motor(50,50)
 		return
-	
-	if rnd(0,1):
-		send_motor(30,0, override = vl < 150)
+
+	#if vl < 200 and 0 == 1:
+	#	return
+
+	if rnd(0,4):
+		send_motor(35,0, override = vl < 250)
 	else:
-		send_motor(0,30, override = vl < 150)
-	
+		send_motor(0,25, override = vl < 250)
+
 def parse_distance(buf):
 	try:
 		parsed_distance = int( [ x.split(': ')[1] for x in buf.split("\n\r") if x ][-1] )
@@ -60,7 +63,7 @@ def parse_distance(buf):
 
 vl = 1
 
-timeout = 2
+timeout = 1.5
 start_time = time()
 
 while True:
@@ -90,7 +93,7 @@ while True:
 
 	towers = detect_towers(frame, **hsv_ranges)
 	for (x,y,w,h), color in towers:
-		if color == 'green':
+		if color == 'green' or color == 'blue':
 			leds.set_leds(Leds.BLUE)
 			corners = [[
 				[x,y], [x+w,y], [x+w,y+h], [x,y+h]
@@ -99,7 +102,7 @@ while True:
 			print(f"Detected tower on x:{x}, y:{y}, width:{w}, height:{h} in {color} color." )
 			break
 
-	if not len(markers) and not any(rect[1] == 'green' for rect in towers):
+	if not len(markers) and not any(rect[1] == 'green' or rect[1] == 'blue' for rect in towers):
 		print("EMPTY")
 		if time() - start_time > timeout:
 			leds.set_leds(Leds.RED)
