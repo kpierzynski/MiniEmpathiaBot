@@ -4,6 +4,13 @@
   go zaimplementować), zestaw "zakomentowanych?" parametrów stanowiących "scenariusze" (konrad)
 - Opis istniejącego systemu wizyjnego (konrad)
 
+![robot](./../images/robot.jpg)
+
+# 0. Wstęp
+Aktualne kody źródłowe znajdują się [tutaj](https://github.com/kpierzynski/MiniEmpathiaBot)
+
+Wersja projektu PCB płytki, która została fizycznie wykonana w ramach projektu Empatycznych Robotów znajduje się w `tag'u` [tutaj](https://github.com/kpierzynski/MiniEmpathiaBot/archive/refs/tags/v1.0_pcb.zip)
+
 # 1. Budowa
 
 ## Opis
@@ -94,6 +101,21 @@ stanu za pomocą `wieżyczki`. Ponadto wykonywuje ona kod, który podejmuje decy
 
 Zadaniem `dolnej` płytki jest kontrola silników, odbiór danych z czujników oraz nasłuchiwanie komend z `górnej` płytki
 oraz informowanie jej o stanie czujników.
+
+### Ładowanie
+Ładowanie odbywa się poprzez przyłożenie prądu poprzez pady kontaktowe od spodu dolnej płytki, o parametrach 5V i minimum 2.1A. Należy pamiętać, że robot musi być wtedy włączony (natomiast sama płytka `Raspberry Pi Zero 2 W` może zostać wyłączona poprzez komendę `shutdown now` wysłaną z terminala.). Dla ułatwienia, przygotowany został prosty projekt ładowarki, na którą można nałożyć robota:
+![charger](./../images/charger.jpg)
+
+### Uwagi
+- Odwrotne połączenie baterii do złącza dolnej płytki skutkuje uszkodzeniem robota
+- Odwrotne przyłożenie napięcia zasilania do padów ładujących może skutkować uszkodzeniem robota
+- Warto przyłożyć mały wiatraczek w pobliżu robota podczas jego ładowania (opcjonalne, ale zalecane)
+- Podłączenie zasilania poprzez złącze `USB` na płytce `Raspberry Pi` może skutkować uszkodzeniem tej płytki, jak i całego robota
+- Wyłączenie robota przełącznikiem, bez wcześniejszego programowego wyłączenia `Raspberry Pi` (z poziomu konsoli) może skutkować uszkodzeniem plików na karcie mikro SD i wymagać będzie ponownego wgrania systemu operacyjnego
+- Pierwsze uruchomienie programu robota może skutkować niekontrolowanym ruchem silników, należy wtedy zewrzeć piny GND i NRST złącza programowania
+- Jeśli robot się nie porusza, mimo poprawie włączonego programu, można przeprowadzić reset poprzez zwarcie pinów GND i NRST
+- Uruchomienie programu do kontroli wieżyczki i programu głównego na raz można osiągnąć poprzez zastosowanie programu `tmux` [wiki](https://en.wikipedia.org/wiki/Tmux) 
+- Układ zabezpieczający ogniwa bywa czasem `nadgorliwy` i jeśli po włączeniu robota przełącznikiem nie włącza się, należy go wyłączyć i włączyć ponownie
 
 ## Schematy
 
@@ -194,6 +216,8 @@ ogólne:
 - 1x !jeden zestaw starczy na kilka robotów! Zestaw śrubek
   M2 [przykład](https://allegro.pl/oferta/zestaw-srub-nakretek-metalowych-m2-420-sztuk-jakar-14384052335)
 - cyna 0.56mm +- 0.16mm
+- około 10cm taśmy niklowej (do wykonania połączeń przy silnikach)
+- około 15cm taśmy niklowej (opcjonalnie) (do wykonania ładowarki)
 
 # 2. Uruchomienie
 
