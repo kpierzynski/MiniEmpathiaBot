@@ -32,6 +32,8 @@ class UART:
         return result
 
     def send_motor_config(self, left_speed: int, right_speed: int) -> None:
+        left_speed = int(left_speed / 1.5)
+        right_speed = int(right_speed / 1.5)
         cmd = f"L{self._prepare_int(left_speed)}R{self._prepare_int(right_speed)}"
         self.write(cmd)
 
