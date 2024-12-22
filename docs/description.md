@@ -1,15 +1,11 @@
-- Dokładny opis budowy robota, szczegółowy, z rysunkiem, repozytorium kodu, częściami (Konrad)
-- Opis systemu znajdującego się na robocie (wraz z kodem) z opisem dokładnym, co robot może teraz zrobić (Konrad)
-- Opis w jaki sposób łączymy się za pomocą komputera z robotem, protokoły, czy mamy podgląd z robota (jak nie to musimy
-  go zaimplementować), zestaw "zakomentowanych?" parametrów stanowiących "scenariusze" (konrad)
-- Opis istniejącego systemu wizyjnego (konrad)
-
 ![robot](./../images/robot.jpg)
 
 # 0. Wstęp
+
 Aktualne kody źródłowe znajdują się [tutaj](https://github.com/kpierzynski/MiniEmpathiaBot)
 
-Wersja projektu PCB płytki, która została fizycznie wykonana w ramach projektu Empatycznych Robotów znajduje się w `tag'u` [tutaj](https://github.com/kpierzynski/MiniEmpathiaBot/archive/refs/tags/v1.0_pcb.zip)
+Wersja projektu PCB płytki, która została fizycznie wykonana w ramach projektu Empatycznych Robotów znajduje się w
+`tag'u` [tutaj](https://github.com/kpierzynski/MiniEmpathiaBot/archive/refs/tags/v1.0_pcb.zip)
 
 # 1. Budowa
 
@@ -18,51 +14,56 @@ Wersja projektu PCB płytki, która została fizycznie wykonana w ramach projekt
 Ze względu na minimalizację wymiarów robota, jego konstrukcja przewiduje dwie połączone nad sobą płytki drukowane. Dolna
 płytka będzie odpowiedzialna za interakcję z otoczeniem, a górna, za przetwarzanie informacji i podejmowanie decyzji.
 
-Poruszanie się robota w przestrzeni będzie realizowane przy pomocy dwóch miniaturowych silników z przekładniami firmy
-Pololu. Każdy z nich wyposażony jest w enkoder magnetyczny na bazie czujników efektu Hall’a TLE4946-2K, specjalnie
+Poruszanie się robota w przestrzeni jest realizowane przy pomocy dwóch miniaturowych silników z przekładniami firmy
+Pololu. Każdy z nich wyposażony jest w enkoder magnetyczny na bazie czujników efektu Hall’a `TLE4946-2K`, specjalnie
 zaprojektowanych do tego scenariusza. Obrót silników może być nadzorowany przez czujniki prądu, jeden na każdy silnik,
 aby uzyskać dokładne sterowanie momentem silników. W celu wyeliminowania strat na typowych czujnikach prądu z shunt
-resistor, można użyć układu, który mierzy prąd w oparciu o efekt Hall’a. Przykładem takiego sensora jest ACS712,
-natomiast jest on obecnie nieobsługiwany w oprogramowani dolnej płytki. Do zasilania silników jako układ wykonawczy
-zostanie wykorzystany DRV8833. Ten sterownik umożliwia obsługę dwóch silników i charakteryzuje się tym, że wymaga
+resistor, zastosowano układ, który mierzy prąd w oparciu o efekt Hall’a. Przykładem takiego sensora jest `ACS712`,
+natomiast jest on obecnie nieobsługiwany w oprogramowaniu dolnej płytki. Do zasilania silników jako układ wykonawczy
+jest wykorzystywany `DRV8833`. Ten sterownik umożliwia obsługę dwóch silników i charakteryzuje się tym, że wymaga
 jedynie dwóch linii sterujących na silnik do regulacji prędkości i kierunku obrotu, a także jest prosty w obsłudze za
-pomocą sprzętowych Timer'ów w mikrokontrolerze.
+pomocą sprzętowych Timer'ów w mikrokontrolerze `STM32`.
 
-Aby zapewnić robotowi precyzyjną orientację w terenie, zostanie wyposażony w zintegrowany układ BNO055, składający się z
-akcelerometru, żyroskopu oraz magnetometru firmy Bosch. Układ ten może wspomagać algorytmy ruchu robota, aby osiągnąć
+Aby zapewnić robotowi precyzyjną orientację w terenie, konstrukcja przewiduje zintegrowany układ `BNO055`, składający się
+z akcelerometru, żyroskopu oraz magnetometru firmy Bosch. Układ ten może wspomagać algorytmy ruchu robota, aby osiągnąć
 maksymalną precyzję jego manewrów, natomiast jest on obecnie nieobsługiwany przez oprogramowanie dolnej płytki.
-Dodatkowo, sensory VL53L0X dostarczą informację o odległości przeszkód znajdujących się przed robotem. Zastosowanie tych
-sensorów wprowadza zwiększoną złożoność zarówno konstrukcji płytki, jak i algorytmów sterujących w porównaniu do
+Dodatkowo, sensor `VL53L0X` dostarcza informację o odległości przeszkód znajdujących się przed robotem. Zastosowanie
+tego typu sensorów wprowadza zwiększoną złożoność zarówno konstrukcji płytki, jak i algorytmów sterujących w porównaniu do
 tradycyjnych przycisków i krańcówek. Niemniej jednak ta zmiana przyczynia się do redukcji kontaktu mechanicznego z
 otoczeniem, co przekłada się na zminimalizowanie ryzyka uszkodzeń robota i zwiększenie jego niezawodności.
 
-Do zasilania robota zostaną wykorzystane dwa ogniwa litowo-jonowe INR18650-35E firmy Samsung o łącznej pojemności 7Ah.
-Ze względu na niewielkie rozmiary robota, w projekcie zostaną wykorzystane cylindryczne ogniwa zamiast płaskich baterii
-litowo-polimerowych, co wiąże się z koniecznością dodania układów zabezpieczających. Aby zapewnić bezpieczne zarządzani
-energią, zostanie wykorzystany układ ochrony baterii DW01 w połączeniu z tranzystorami wykonawczymi. Ten układ ma za
+Do zasilania robota wykorzystane są dwa ogniwa litowo-jonowe `INR18650-35E` firmy Samsung o łącznej pojemności `7Ah`.
+Ze względu na niewielkie rozmiary robota, w projekcie zostaną wykorzystano cylindryczne ogniwa zamiast płaskich baterii
+litowo-polimerowych, co wiąże się z koniecznością dodania układów zabezpieczających. Aby zapewnić bezpieczne zarządzanie
+energią, użyto układ ochrony baterii `DW01` w połączeniu z tranzystorami wykonawczymi. Ten układ ma za
 zadanie monitorować napięcie baterii, aby nie przekroczyła dopuszczalnego zakresu oraz odłączać napięcie w przypadku
-wystąpienia zwarcia. Proces ładowania będzie nadzorowany przez układ TP5100, który nie tylko dostarczy do dwóch amperów
+wystąpienia zwarcia. Proces ładowania jest nadzorowany przez moduł `TP5100`, który nie tylko dostarczy do dwóch amperów
 prądu, ale także zapewni, że proces ładowania ogniw przebiegnie zgodnie ze specyfikacją ładowania metodą constant
-current constant voltage (CC CV). Jednym z założeń projektu jest możliwość ładowania robota bez ingerencji człowieka.
-Aby to osiągnąć, na spodzie dolnej płytki drukowanej umieszone zostaną dwa pady kontaktowe. Przy ich użyciu, robot
-mógłby po najechaniu na specjalną stację, ładować baterie.
+current constant voltage (`CC CV`). Czas ładowania wynosi około `4h`.
+Jednym z założeń projektu jest możliwość ładowania robota bez ingerencji człowieka.
+Aby to osiągnąć, na spodzie dolnej płytki drukowanej umieszone są dwa pady kontaktowe. Przy ich użyciu, robot
+mógłby po najechaniu na specjalną stację, ładować baterie (brak implementacji w oprogramowaniu).
 
-Robot, pomimo niewielkich rozmiarów, będzie wyposażony w układy wymagające dużego poboru prądu. Aby sprostać ich
-oczekiwaniom, w projekcie zastosowane będą dwie przetwornice. Jedną o napięciu wyjściowym 5V – U3V70A, która jest w
-stanie podać do 10A w szczycie zapotrzebowania nawet przez kilka sekund. Druga przetwornica, tym razem dla układów
-zasilanych napięciem 3.3V - U7V8F3 będzie dostarczać prąd dla wszystkich czujników oraz mikrokontrolera. Warto
+Robot, pomimo niewielkich rozmiarów, wyposażony jest w układy wymagające dużego poboru prądu. Aby sprostać ich
+oczekiwaniom, w projekcie zastosowano dwie przetwornice. Jedną o napięciu wyjściowym `5V` – `U3V70A` (lub `U3V70F5` w
+zależności od dostępności), która jest w
+stanie podać do `10A` w szczycie zapotrzebowania nawet przez kilka sekund. Druga przetwornica, tym razem dla układów
+zasilanych napięciem `3.3V` - `U7V8F3` dostarcza prąd dla wszystkich czujników oraz mikrokontrolera. Warto
 zaznaczyć, że przetwornica 3.3V będzie pracować w dwóch trybach: step-down, gdy bateria będzie naładowana i step-up, gdy
 bateria będzie bliższa rozładowaniu.
 
-Na dolnej płytce umieszczony będzie również 32-bitowy mikrokontroler z rodziny STM32. Wysoka moc obliczeniowa,
+Na dolnej płytce umieszczony jest również 32-bitowy mikrokontroler z rodziny STM32 - `STM32H7A3RIT6`. Wysoka moc
+obliczeniowa,
 elastyczność i popularność pozwoli na implementację niemal dowolnie skomplikowanych algorytmów. Będzie on kontrolować
-wszystkie powyższe układy oraz komunimować się z głównym procesorem robota.
+wszystkie powyższe układy na dolnej płytce oraz komunimować się z głównym procesorem robota.
 
-Rolę mózgu urządzenia będzie pełnić Raspberry Pi Zero 2 W, jest to czterordzeniowy, jednopłytkowy komputer umieszczony
-na górnej płytce, który z pomocą kamery Raspberry Pi Cam V3 będzie reagować na swoje otoczenie i inne roboty. Wszystkie
-algorytmy sztucznej inteligencji i empatii będą realizowane właśnie na tym mikrokomputerze. Sygnalizacja własnego
-wewnętrznego stanu będzie osiągana przez indywidualnie adresowalne diody RGB - WS2812B, ułożone w 8 rzędów, każdy po 3
-diody.
+Rolę mózgu urządzenia pełni `Raspberry Pi Zero 2 W`, jest to czterordzeniowy, jednopłytkowy komputer umieszczony
+na górnej płytce, który z pomocą kamery `Raspberry Pi Cam V3` będzie reagować na swoje otoczenie i inne roboty.
+Wszystkie
+algorytmy sztucznej inteligencji i empatii będą realizowane właśnie na tym mikrokomputerze.
+
+Sygnalizacja własnego wewnętrznego stanu osiągana jest przez indywidualnie adresowalne diody RGB - `WS2812B`, ułożone w 8
+rzędów, każdy po 3 diody.
 
 ### Górna płytka składa się z:
 
@@ -103,19 +104,30 @@ Zadaniem `dolnej` płytki jest kontrola silników, odbiór danych z czujników o
 oraz informowanie jej o stanie czujników.
 
 ### Ładowanie
-Ładowanie odbywa się poprzez przyłożenie prądu poprzez pady kontaktowe od spodu dolnej płytki, o parametrach 5V i minimum 2.1A. Należy pamiętać, że robot musi być wtedy włączony (natomiast sama płytka `Raspberry Pi Zero 2 W` może zostać wyłączona poprzez komendę `shutdown now` wysłaną z terminala.). Dla ułatwienia, przygotowany został prosty projekt ładowarki, na którą można nałożyć robota:
+
+Ładowanie odbywa się poprzez przyłożenie prądu poprzez pady kontaktowe od spodu dolnej płytki, o parametrach `5V` i
+minimum `2.1A`. Należy pamiętać, że robot musi być wtedy włączony (natomiast sama płytka `Raspberry Pi Zero 2 W` może
+zostać wyłączona poprzez komendę `shutdown now` wysłaną z terminala). Dla ułatwienia, przygotowany został prosty
+projekt manualnej ładowarki, na którą można nałożyć robota:
 ![charger](./../images/charger.jpg)
 
 ### Uwagi
+
 - Odwrotne połączenie baterii do złącza dolnej płytki skutkuje uszkodzeniem robota
 - Odwrotne przyłożenie napięcia zasilania do padów ładujących może skutkować uszkodzeniem robota
 - Warto przyłożyć mały wiatraczek w pobliżu robota podczas jego ładowania (opcjonalne, ale zalecane)
-- Podłączenie zasilania poprzez złącze `USB` na płytce `Raspberry Pi` może skutkować uszkodzeniem tej płytki, jak i całego robota
-- Wyłączenie robota przełącznikiem, bez wcześniejszego programowego wyłączenia `Raspberry Pi` (z poziomu konsoli) może skutkować uszkodzeniem plików na karcie mikro SD i wymagać będzie ponownego wgrania systemu operacyjnego
-- Pierwsze uruchomienie programu robota może skutkować niekontrolowanym ruchem silników, należy wtedy zewrzeć piny GND i NRST złącza programowania
-- Jeśli robot się nie porusza, mimo poprawie włączonego programu, można przeprowadzić reset poprzez zwarcie pinów GND i NRST
-- Uruchomienie programu do kontroli wieżyczki i programu głównego na raz można osiągnąć poprzez zastosowanie programu `tmux` [wiki](https://en.wikipedia.org/wiki/Tmux) 
-- Układ zabezpieczający ogniwa bywa czasem `nadgorliwy` i jeśli po włączeniu robota przełącznikiem nie włącza się, należy go wyłączyć i włączyć ponownie
+- Podłączenie zasilania poprzez złącze `USB` na płytce `Raspberry Pi` może skutkować uszkodzeniem tej płytki, jak i
+  całego robota
+- Wyłączenie robota przełącznikiem, bez wcześniejszego programowego wyłączenia `Raspberry Pi` (z poziomu konsoli) może
+  skutkować uszkodzeniem plików na karcie mikro SD i wymagać będzie ponownego wgrania systemu operacyjnego
+- Pierwsze uruchomienie programu robota może skutkować niekontrolowanym ruchem silników, należy wtedy zewrzeć piny GND i
+  NRST złącza programowania
+- Jeśli robot się nie porusza, mimo poprawie włączonego programu, można przeprowadzić reset poprzez zwarcie pinów GND i
+  NRST
+- Uruchomienie programu do kontroli wieżyczki i programu głównego na raz można osiągnąć poprzez zastosowanie programu typu
+  multiplekser, na przykład: `tmux` [wiki](https://en.wikipedia.org/wiki/Tmux)
+- Układ zabezpieczający ogniwa bywa czasem 'nadgorliwy' i jeśli po włączeniu robota przełącznikiem nie włącza się,
+  należy go wyłączyć i włączyć ponownie
 
 ## Schematy
 
@@ -146,7 +158,7 @@ Wykaz potrzebnych układów scalonych:
   WS2812 [przykład](https://botland.com.pl/lancuchy-i-matryce-led/6255-listwa-led-rgb-ws2812-5050-x-8-diod-53mm-5903351249157.html)
 - 1x Listwa goldpin kątowa 2.54 (listwa 40 goldpinów kątowych starczy na 9
   robotów) [przykład](https://allegro.pl/oferta/wtyk-goldpin-1x40-katowy-raster-2-54mm-5-sztuk-15595405288)
-- 1x Listwa goldpin prosta 2.54 (listwa 40 goldpinów prostych starczy na 3
+- 1x Listwa goldpin prosta 2.54 (listwa 40 goldpinów prostych starczy na 4
   roboty) [przykład](https://allegro.pl/oferta/goldpin-listwa-prosta-1x40-2-54mm-2szt-7845727129)
 
 `dolna` płytka:
@@ -404,8 +416,8 @@ Wektory celu dla scenariusza poszukiwania ArUco wyglądają następująco:
 
 ```python
 GOALS = {
-	"aruco": [1, 0.2, 0.5, 0.5, 1],
-	"teamwork": [0, 1, 0.8, 0.8, 0]
+    "aruco": [1, 0.2, 0.5, 0.5, 1],
+    "teamwork": [0, 1, 0.8, 0.8, 0]
 }
 THRESHOLD = 0.8
 ```
@@ -423,4 +435,9 @@ THRESHOLD = 0.8
 Dobierając różne wartości wektorów celu lub/i dodając nowe, można zmienić sposób działania poszczególnych robotów jak i
 całego roju.
 
-Akcje, które mają się wykonać po spełnieniu wszystkich warunków dla danej akcji zdefiniowane są na końcu pętli głównej w bloku `match`. W przykładowym kodzie, są dwie akcje związane z dwoma wektorami celu oraz dodatkowa 'domyślna' akcja jeśli żaden z wektorów nie spełni warunków. W przypadku spełnienia wektora celu o nazwie `aruco` robot zapali wieżyczkę na zielono oraz rozpocznie jazdę w kierunku pierwszego kodu. W przypadku akcji wektora `teamwork`, robot zapali się na niebiesko i zacznie podążać do pierwszego znalezionego robota, który widzi cel lub innego robota, który widzi cel. Domyślna akcja powoduje, że robot porusza się losowo po środowisku.
+Akcje, które mają się wykonać po spełnieniu wszystkich warunków dla danej akcji zdefiniowane są na końcu pętli głównej w
+bloku `match`. W przykładowym kodzie, są dwie akcje związane z dwoma wektorami celu oraz dodatkowa 'domyślna' akcja
+jeśli żaden z wektorów nie spełni warunków. W przypadku spełnienia wektora celu o nazwie `aruco` robot zapali wieżyczkę
+na zielono oraz rozpocznie jazdę w kierunku pierwszego kodu. W przypadku akcji wektora `teamwork`, robot zapali się na
+niebiesko i zacznie podążać do pierwszego znalezionego robota, który widzi cel lub innego robota, który widzi cel.
+Domyślna akcja powoduje, że robot porusza się losowo po środowisku.
