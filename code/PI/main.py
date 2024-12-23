@@ -34,6 +34,8 @@ def fuzzy_similarity(vec1, vec2):
 
 
 camera = Camera()
+camera.serve_camera_feed()
+
 uart = UART(baudrate=115200, port="/dev/serial0")
 leds = Leds()
 
@@ -69,9 +71,6 @@ def spin():
 	if vl > 500:
 		send_motor(50,50)
 		return
-
-	#if vl < 200 and 0 == 1:
-	#	return
 
 	if rnd(0,4):
 		send_motor(35,0, override = vl < 250)
